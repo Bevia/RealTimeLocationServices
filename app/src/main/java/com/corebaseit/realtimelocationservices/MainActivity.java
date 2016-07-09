@@ -47,6 +47,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -400,7 +401,9 @@ public class MainActivity extends AppCompatActivity {
 
             TAG_PROVIDER_ENABLE = false;
             toolbar.setSubtitle("   Real-Time Location Tracking: OFF");
-            Toast.makeText(MainActivity.this, "¡El servicio de ubicación está desactivado!", Toast.LENGTH_LONG).show();
+            //Toast.makeText(MainActivity.this, "¡El servicio de ubicación está desactivado!", Toast.LENGTH_LONG).show();
+
+            showNoInternetConnectionAlertDialog(MainActivity.this);
         }
     }
 
@@ -430,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
             myCP.setText(postalCode);
             myCountry.setText(country);
 
-            Log.d("MY_PLACE", "Where am I? " + city + "  " + address + "  " + postalCode + "  " + country);
+            /*Log.d("MY_PLACE", "Where am I? " + city + "  " + address + "  " + postalCode + "  " + country);*/
 
         } else {
 
@@ -438,19 +441,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*public void showNoInternetConnectionAlertDialog(Context context) {
+    public void showNoInternetConnectionAlertDialog(Context context) {
         new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
-                .setTitleText("Connection Error!")
-                .setContentText("Make sure you have a connection to internet")
+                .setTitleText("Locations Services is disable!")
+                .setContentText("\n\n¿Do you want to enable it?")
                 .setConfirmText("OK")
+                .setCancelText("Cancel")
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
+
+                        Intent intent = new Intent(
+                                Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        MainActivity.this.startActivity(intent);
                         sDialog.dismissWithAnimation();
                     }
                 })
                 .show();
-    }*/
+    }
 
     @Override
     protected void onResume() {
