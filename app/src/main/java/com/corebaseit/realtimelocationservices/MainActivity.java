@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -35,18 +38,24 @@ import com.corebaseit.realtimelocationservices.rest.RestLocations;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final InternetConnectivityCheker internetConnectivityCheker =
+            new InternetConnectivityCheker();
+
     String PROVIDER = LocationManager.NETWORK_PROVIDER;
     LocationTracker lTracker;
+
     private int REQUEST_LOCATION = 2;
     protected LocationManager locationConnectivityManager;
 
@@ -63,6 +72,20 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.city)
+    TextView myCity;
+
+    @BindView(R.id.address)
+    TextView myAddress;
+
+    @BindView(R.id.country)
+    TextView myCountry;
+
+    @BindView(R.id.cp) // this is the Postal Code
+            TextView myCP;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +119,11 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "no se ha podido conectar al servidor...", Toast.LENGTH_LONG).show();
                         } else {
                             locationModels = RestLocations.parseLocationFeed(response); // response is the JSON!
-                            updateDisplay();
+                            try {
+                                updateDisplay();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 },
@@ -113,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         queue.add(request);
     }
 
-    protected void updateDisplay() {
+    protected void updateDisplay() throws IOException {
 
         if (locationModels != null) {
 
@@ -126,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void reCallNames() {
+    private void reCallNames() throws IOException {
 
         //make sure we DO have the names in that show up in the list
         //these names are the names to the right of the image in the list!!
@@ -150,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
 
             mainUpdateDisplay();
         }
-
     }
 
     //This is my comparator method use to arrange the distances from smaller to larger!!
@@ -161,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void mainUpdateDisplay() {
+    private void mainUpdateDisplay() throws IOException {
 
         if (names.size() < 1) {
             reCallNames();
@@ -214,13 +240,11 @@ public class MainActivity extends AppCompatActivity {
             } else {
 
                 //update only dataset, retain index of listview!!
-
                 type_contact_list_inner_image_adapter.clear();
                 type_contact_list_inner_image_adapter.addAll(distanceModels);
                 type_contact_list_inner_image_adapter.notifyDataSetChanged();
 
                 Log.d("KM_UPDATING", "Is it updating?" + "adapter is NOT null");
-
             }
         }
     }
@@ -242,12 +266,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void getDistanceInKm(double lat, double lg, double latJSON, double lgJSON) {
 
-        LatLng point1 = new LatLng(lat, lg);  //these values are passed from our location tracker
+        LatLng point1 = new LatLng(lat, lg);  //this is where you currently are at...
+        LatLng point2 = new LatLng(latJSON, lgJSON); //These are the values given by the JSON!
 
-        /**
-         * place the lat and long of the city of interest here:
-         */
-        LatLng point2 = new LatLng(latJSON, lgJSON);  //Valencia city (Spain)
+        Log.d("MY_PLACE", "Where am I? " + point1);
+        MyCurrentAddress(lat, lg); //Give me my address and other useful data!
 
         //Call the distanceBetween method:
         distanceBetween(point1, point2);
@@ -297,14 +320,22 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onLocationChanged(Location location) {
-            reCallNames();
+            try {
+                reCallNames();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-            Toast.makeText(MainActivity.this, "¡El servicio de ubicación está desactivado!", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "The Location Service is disable!", Toast.LENGTH_LONG).show();
             TAG_PROVIDER_ENABLE = false;
-            reCallNames();
+            try {
+                reCallNames();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             toolbar.setSubtitle("   Real-Time Location Tracking: OFF");
             invalidateOptionsMenu(); // now onCreateOptionsMenu(...) is called again
             mState = true;// setting state for ubicacion menu
@@ -315,7 +346,11 @@ public class MainActivity extends AppCompatActivity {
             TAG_PROVIDER_ENABLE = true;
             invalidateOptionsMenu(); // now onCreateOptionsMenu(...) is called again
             toolbar.setSubtitle("   Real-Time Location Tracking: ON");
-            reCallNames();
+            try {
+                reCallNames();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             mState = false;// setting state for ubicacion menu
         }
 
@@ -368,6 +403,54 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "¡El servicio de ubicación está desactivado!", Toast.LENGTH_LONG).show();
         }
     }
+
+    private void MyCurrentAddress(double myLat, double myLong) {
+
+        if (internetConnectivityCheker.isOnline(this)) {
+
+            Geocoder geocoder;
+            List<Address> addresses = null;
+            geocoder = new Geocoder(this, Locale.getDefault());
+
+            try {
+                // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                addresses = geocoder.getFromLocation(myLat, myLong, 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            String address = addresses.get(0).getAddressLine(0);
+            String city = addresses.get(0).getLocality();
+            String country = addresses.get(0).getCountryName();
+            String postalCode = addresses.get(0).getPostalCode();
+
+            myCity.setText(city);
+            myAddress.setText(address);
+            myCP.setText(postalCode);
+            myCP.setText(postalCode);
+            myCountry.setText(country);
+
+            Log.d("MY_PLACE", "Where am I? " + city + "  " + address + "  " + postalCode + "  " + country);
+
+        } else {
+
+            Toast.makeText(MainActivity.this, "There seems to be no conection to the internet!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /*public void showNoInternetConnectionAlertDialog(Context context) {
+        new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Connection Error!")
+                .setContentText("Make sure you have a connection to internet")
+                .setConfirmText("OK")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.dismissWithAnimation();
+                    }
+                })
+                .show();
+    }*/
 
     @Override
     protected void onResume() {
