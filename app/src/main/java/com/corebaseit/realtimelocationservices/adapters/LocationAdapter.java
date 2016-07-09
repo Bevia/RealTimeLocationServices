@@ -57,7 +57,8 @@ public class LocationAdapter extends ArrayAdapter<DistanceModel> {
         viewHolder.textViewCity.setText(distance.getCity());
         viewHolder.textViewAddress.setText(distance.getAddress());
 
-        if(distance.getDistance() < 1 || distance.getDistance() > 20000000)
+        if(distance.getDistance() < 1 ) //Take constrain out, now it will show even over long distances!
+          //  if(distance.getDistance() < 1 || distance.getDistance() > 20000000)
         {viewHolder.textViewDistance.setText("");
         }else {
             if(distance.getDistance() > 1000) {
