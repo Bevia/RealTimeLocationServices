@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"></include>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="fill_parent"
+        android:layout_height="1.4dp"
+        android:layout_below="@+id/toolbar"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/linea_negra_divisoria" />
+
+
+    <!--<ImageView
+        android:id="@+id/logImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="6"
+        android:layout_marginTop="0dp"
+        android:scaleType="fitCenter"
+        android:layout_below="@+id/toolbar" />-->
+
+    <ListView
+        android:id="@+id/tab5_inner_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:layout_marginTop="0dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:layout_below="@+id/logImage">
+    </ListView>
+
+</LinearLayout>

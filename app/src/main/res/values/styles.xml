@@ -1,0 +1,30 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="ParentMaterialTheme">
+
+    </style>
+
+
+    <style name="ParentMaterialTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/material_blue_A200</item>
+        <item name="colorPrimaryDark">@color/blue_900</item>
+        <item name="colorAccent">@color/material_blue_100</item>
+
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="android:textColor">@color/Black</item>
+
+    </style>
+
+    <style name="NoTitleDialog" parent="android:style/Theme.Holo.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/material_blue_A400</item>
+        <item name="android:textColorSecondary">@color/darkblue</item>
+    </style>
+</resources>
