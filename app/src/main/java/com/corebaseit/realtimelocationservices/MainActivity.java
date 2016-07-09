@@ -226,6 +226,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             lview = (ListView) findViewById(R.id.tab5_inner_list);
+            /**Makes listview scrolling smoother! */
+            lview.setScrollingCacheEnabled(false);
 
             /** Updating parsed JSON data into ListView */
 
