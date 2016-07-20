@@ -54,5 +54,5 @@ Gradle:
 
     Tracking ON
     
-    
+    <img width="487" alt="tracking2" src="https://cloud.githubusercontent.com/assets/1615724/16980709/a7424696-4e67-11e6-9cca-808da415f48e.png">
 
