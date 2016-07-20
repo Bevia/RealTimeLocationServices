@@ -54,5 +54,5 @@ Gradle:
 
     Tracking ON
     
-![tracking1](https://cloud.githubusercontent.com/assets/1615724/16980759/a7424696-4e67-11e6-9cca-808da415f48e.png)
+![tracking2](https://cloud.githubusercontent.com/assets/1615724/16981058/307d2cfe-4e69-11e6-893a-967dd898dcec.png)
 
