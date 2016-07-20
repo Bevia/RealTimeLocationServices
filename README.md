@@ -47,3 +47,12 @@ Gradle:
                   compile 'com.google.code.gson:gson:2.4'
                   compile 'cn.pedant.sweetalert:library:1.3'
               }
+
+    Tracking OFF
+
+![tracking1](https://cloud.githubusercontent.com/assets/1615724/16980759/dbee551a-4e67-11e6-90c2-cca8bf8a050c.png)
+
+    Tracking ON
+    
+    
+
